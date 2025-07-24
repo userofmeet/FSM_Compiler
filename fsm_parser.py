@@ -1,32 +1,40 @@
-def create_rtos_main(systems, output_file):
-    with open(output_file, 'w') as main_file:
-        main_file.write('#include "FreeRTOS.h"\n')
-        main_file.write('#include "task.h"\n')
-        main_file.write('#include "queue.h"\n')
-        main_file.write('#include <stdio.h>\n')
-        main_file.write('#include <string.h>\n\n')
+# format with fsm: states: events: and transitions: sections
+def parse_fsm_file(file_path):
+    systems = []
+    current = {}
+    parsing_mode = None
 
-        for obj in systems:
-            main_file.write(f'extern void handle_event_{obj["name"]}(const char*);\n')
-        main_file.write("\n")
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
 
-        for obj in systems:
-            main_file.write(f'QueueHandle_t queue_{obj["name"]};\n')
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):  # skip empty files
+            continue
+        if line.startswith("fsm:"):
+            if current:  # save previous fsms
+                systems.append(current)
+            current = {
+                "name": line.replace("fsm:", "").strip(),
+                "states": [],
+                "events": [],
+                "transitions": []
+            }
+            parsing_mode = None
+        elif line.startswith("states:"):
+            current["states"] = [state.strip() for state in line.replace("states:", "").split(",")]
+        elif line.startswith("events:"):
+            current["events"] = [event.strip() for event in line.replace("events:", "").split(",")]
+        elif line.startswith("transitions:"):
+            parsing_mode = "transitions"
+        elif parsing_mode == "transitions":
+            parts = line.split(":")
+            transition = parts[0].strip()
+            event = parts[1].strip()
+            source, destination = [state.strip() for state in transition.split("->")]
+            current["transitions"].append((source, event, destination))
 
-        for obj in systems:
-            main_file.write(f"""
-void task_{obj['name']}(void *params) {{
-    char event[32];
-    while (1) {{
-        if (xQueueReceive(queue_{obj['name']}, &event, portMAX_DELAY)) {{
-            handle_event_{obj['name']}(event);
-        }}
-    }}
-}}\n""")
+    if current:  # last fms
+        systems.append(current)
 
-        main_file.write("\nint main() {\n")
-        for obj in systems:
-            main_file.write(f'    queue_{obj["name"]} = xQueueCreate(10, sizeof(char[32]));\n')
-        for obj in systems:
-            main_file.write(f'    xTaskCreate(task_{obj["name"]}, "{obj["name"]}", 1000, NULL, 2, NULL);\n')
-        main_file.write('    vTaskStartScheduler();\n    return 0;\n}\n')
+    return systems
