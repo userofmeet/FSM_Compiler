@@ -1,0 +1,86 @@
+# for any random state u can jst mention it as ANY_STATE in the .fsm file
+
+# FORMAT FOR WRITING THE .fsm
+# fsm: fsm_name
+# states: write the names of all the possible states
+# events: now write all the possible events in ur fsm 
+# transitions:
+# STATE1 -> STATE2 : event_name
+
+
+fsm: Navigation
+states: IDLE, ROUTE_PLANNING, MOVING, AVOIDING_OBSTACLE, WAITING, ARRIVED, RECALCULATING
+events: start_route, route_ready, begin_move, detect_obstacle, obstacle_cleared, wait_command, continue, reach_destination, route_lost
+transitions:
+  IDLE -> ROUTE_PLANNING : start_route  
+  ROUTE_PLANNING -> MOVING : route_ready  
+  MOVING -> AVOIDING_OBSTACLE : detect_obstacle  
+  AVOIDING_OBSTACLE -> MOVING : obstacle_cleared  
+  MOVING -> WAITING : wait_command  
+  WAITING -> MOVING : continue  
+  MOVING -> ARRIVED : reach_destination  
+  MOVING -> RECALCULATING : route_lost  
+  RECALCULATING -> MOVING : route_ready  
+  ARRIVED -> IDLE : continue
+
+fsm: PayloadHandling
+states: EMPTY, LOADING, LOADED, IN_TRANSIT, UNLOADING, DELIVERED, ERROR
+events: begin_loading, finish_loading, start_transit, begin_unloading, finish_unloading, fail
+transitions:
+  EMPTY -> LOADING : begin_loading  
+  LOADING -> LOADED : finish_loading  
+  LOADED -> IN_TRANSIT : start_transit  
+  IN_TRANSIT -> UNLOADING : begin_unloading  
+  UNLOADING -> DELIVERED : finish_unloading  
+  DELIVERED -> EMPTY : finish_unloading  
+  LOADING -> ERROR : fail  
+  UNLOADING -> ERROR : fail  
+  ERROR -> EMPTY : finish_unloading
+
+fsm: Safety
+states: NORMAL, OBSTACLE_ALERT, EMERGENCY_STOP, HAZARD_DETECTED, RECOVERY, MANUAL_OVERRIDE
+events: detect_obstacle, emergency_stop, hazard, reset, resume, override
+transitions:
+  NORMAL -> OBSTACLE_ALERT : detect_obstacle  
+  OBSTACLE_ALERT -> NORMAL : resume  
+  NORMAL -> EMERGENCY_STOP : emergency_stop  
+  OBSTACLE_ALERT -> EMERGENCY_STOP : emergency_stop  
+  EMERGENCY_STOP -> RECOVERY : reset  
+  RECOVERY -> NORMAL : resume  
+  NORMAL -> HAZARD_DETECTED : hazard  
+  HAZARD_DETECTED -> EMERGENCY_STOP : emergency_stop  
+  NORMAL -> MANUAL_OVERRIDE : override  
+  MANUAL_OVERRIDE -> NORMAL : reset  
+
+fsm: Connectivity
+states: OFFLINE, CONNECTING, CONNECTED, LOST_SIGNAL, RECONNECTING
+events: power_on, establish_link, lose_link, attempt_reconnect, link_restored
+transitions:
+  OFFLINE -> CONNECTING : power_on  
+  CONNECTING -> CONNECTED : establish_link  
+  CONNECTED -> LOST_SIGNAL : lose_link  
+  LOST_SIGNAL -> RECONNECTING : attempt_reconnect  
+  RECONNECTING -> CONNECTED : link_restored  
+  RECONNECTING -> OFFLINE : lose_link  
+
+fsm: Diagnostics
+states: IDLE, RUNNING_CHECKS, ERROR_DETECTED, REPORTING, MAINTENANCE
+events: initiate_check, detect_error, report, resolve, schedule_maintenance
+transitions:
+  IDLE -> RUNNING_CHECKS : initiate_check  
+  RUNNING_CHECKS -> ERROR_DETECTED : detect_error  
+  ERROR_DETECTED -> REPORTING : report  
+  REPORTING -> MAINTENANCE : schedule_maintenance  
+  MAINTENANCE -> IDLE : resolve  
+  RUNNING_CHECKS -> IDLE : resolve  
+
+fsm: UserInterface
+states: WAITING_INPUT, PROCESSING, DISPLAYING_FEEDBACK, IDLE, ALERT, SHUTDOWN
+events: receive_input, process, feedback, alert_user, timeout, power_off
+transitions:
+  IDLE -> WAITING_INPUT : receive_input  
+  WAITING_INPUT -> PROCESSING : process  
+  PROCESSING -> DISPLAYING_FEEDBACK : feedback  
+  DISPLAYING_FEEDBACK -> IDLE : timeout  
+  ANY_STATE -> ALERT : alert_user  
+  ANY_STATE -> SHUTDOWN : power_off
