@@ -68,35 +68,35 @@ fsm-compiler/
    ```
 
 3. **Find output C files in the output/ directory**
-  - Each FSM becomes its own .c file.
-  - rtos_main.c is created to handle task creation for each FSM.
+      - Each FSM becomes its own .c file.
+      - rtos_main.c is created to handle task creation for each FSM.
 
-4. **Compile using:**
-  - PlatformIO (VS Code)
-  - Keil
-  - STM32CubeIDE
-  - Arduino IDE (if compatible)
-  - Any FreeRTOS-enabled toolchain
+5. **Compile using:**
+      - PlatformIO (VS Code)
+      - Keil
+      - STM32CubeIDE
+      - Arduino IDE (if compatible)
+      - Any FreeRTOS-enabled toolchain
 
 ## 📚 Example FSMs Included
 
-FSMs in the sample input:
-  - Navigation
-  - Camera
-  - Communication
-  - Localization
-  - MissionControl
-  - Battery
-  - ObstacleAvoidance
+FSMs in the sample input: 
+    - Navigation
+    - Camera
+    - Communication
+    - Localization
+    - MissionControl
+    - Battery
+    - ObstacleAvoidance
 These FSMs model different drone subsystems and demonstrate how complex behavior can be modularized.
 
 
 ## 🧪 Applications
-  - Drones & UAVs
-  - Robotics systems
-  - Industrial automation
-  - Embedded AI control loops
-  - Event-driven IoT devices
+   - Drones & UAVs
+   - Robotics systems
+   - Industrial automation
+   - Embedded AI control loops
+   - Event-driven IoT devices 
 
 ## 📜 License
 MIT License
