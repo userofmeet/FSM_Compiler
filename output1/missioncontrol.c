@@ -1,0 +1,37 @@
+#include <string.h>
+
+typedef enum {
+    IN_PROGRESS,
+    ABORTED,
+    COMPLETED,
+    PAUSED,
+    PLANNING,
+    READY,
+} {'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]}_State;
+
+{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]}_State current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = IN_PROGRESS;
+
+void handle_event_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]}(const char* event) {
+    switch (current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]}) {
+        case IN_PROGRESS:
+            if (strcmp(event, "pause") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = PAUSED;
+            if (strcmp(event, "abort") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = ABORTED;
+            if (strcmp(event, "complete") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = COMPLETED;
+            break;
+        case ABORTED:
+            if (strcmp(event, "plan_ready") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = PLANNING;
+            break;
+        case COMPLETED:
+            break;
+        case PAUSED:
+            if (strcmp(event, "abort") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = ABORTED;
+            if (strcmp(event, "resume") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = IN_PROGRESS;
+            break;
+        case PLANNING:
+            if (strcmp(event, "plan_ready") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = READY;
+            break;
+        case READY:
+            if (strcmp(event, "start") == 0) current_state_{'name': 'MissionControl', 'states': ['IN_PROGRESS', 'ABORTED', 'COMPLETED', 'PAUSED', 'PLANNING', 'READY'], 'events': ['plan_ready', 'start', 'pause', 'resume', 'abort', 'complete'], 'transitions': [('READY', 'start', 'IN_PROGRESS'), ('IN_PROGRESS', 'pause', 'PAUSED'), ('PAUSED', 'abort', 'ABORTED'), ('IN_PROGRESS', 'abort', 'ABORTED'), ('ABORTED', 'plan_ready', 'PLANNING'), ('PAUSED', 'resume', 'IN_PROGRESS'), ('IN_PROGRESS', 'complete', 'COMPLETED'), ('PLANNING', 'plan_ready', 'READY')]} = IN_PROGRESS;
+            break;
+    }
+}
