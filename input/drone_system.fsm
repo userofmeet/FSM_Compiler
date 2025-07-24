@@ -1,0 +1,97 @@
+fsm: Navigation
+states: IDLE, TAKEOFF, ASCENDING, HOLDING, CRUISE, DESCENDING, LANDING, EMERGENCY_LAND
+events: start_mission, reach_altitude, hold_position, resume_cruise, begin_descent, begin_landing, landed, emergency
+transitions:
+  IDLE -> TAKEOFF : start_mission
+  TAKEOFF -> ASCENDING : reach_altitude
+  ASCENDING -> CRUISE : reach_altitude
+  CRUISE -> HOLDING : hold_position
+  HOLDING -> CRUISE : resume_cruise
+  CRUISE -> DESCENDING : begin_descent
+  DESCENDING -> LANDING : begin_landing
+  LANDING -> IDLE : landed
+  CRUISE -> EMERGENCY_LAND : emergency
+  EMERGENCY_LAND -> LANDING : begin_landing
+
+fsm: Camera
+states: CAM_IDLE, RECORDING, STREAMING, SNAPSHOT, PAUSED, OFF
+events: start_record, start_stream, take_photo, pause, resume, stop, shutdown
+transitions:
+  CAM_IDLE -> RECORDING : start_record
+  CAM_IDLE -> STREAMING : start_stream
+  CAM_IDLE -> SNAPSHOT : take_photo
+  RECORDING -> PAUSED : pause
+  PAUSED -> RECORDING : resume
+  RECORDING -> CAM_IDLE : stop
+  STREAMING -> CAM_IDLE : stop
+  CAM_IDLE -> OFF : shutdown
+  RECORDING -> SNAPSHOT : take_photo
+  SNAPSHOT -> RECORDING : resume
+
+fsm: Communication
+states: DISCONNECTED, CONNECTING, CONNECTED, RECONNECTING, DEGRADED, ERROR
+events: initiate, success, fail, lost_connection, recover, degrade, retry
+transitions:
+  DISCONNECTED -> CONNECTING : initiate
+  CONNECTING -> CONNECTED : success
+  CONNECTING -> DISCONNECTED : fail
+  CONNECTED -> RECONNECTING : lost_connection
+  RECONNECTING -> CONNECTED : success
+  RECONNECTING -> DISCONNECTED : fail
+  CONNECTED -> DEGRADED : degrade
+  DEGRADED -> CONNECTED : recover
+  DEGRADED -> RECONNECTING : lost_connection
+  ERROR -> DISCONNECTED : retry
+  DISCONNECTED -> ERROR : fail
+
+fsm: ObstacleAvoidance
+states: CLEAR_PATH, OBSTACLE_DETECTED, EVADING, STUCK, PATH_RECOVERED, OVERRIDE
+events: detect, evade, recover, stuck, override, manual_clear
+transitions:
+  CLEAR_PATH -> OBSTACLE_DETECTED : detect
+  OBSTACLE_DETECTED -> EVADING : evade
+  EVADING -> STUCK : stuck
+  STUCK -> OVERRIDE : override
+  OVERRIDE -> PATH_RECOVERED : manual_clear
+  EVADING -> PATH_RECOVERED : recover
+  PATH_RECOVERED -> CLEAR_PATH : recover
+  PATH_RECOVERED -> OBSTACLE_DETECTED : detect
+
+fsm: Localization
+states: UNAVAILABLE, SEARCHING, LOCKED, DRIFTING, LOST_FIX, REACQUIRING
+events: start_search, gps_fix, drift_detected, lose_fix, reacquire
+transitions:
+  UNAVAILABLE -> SEARCHING : start_search
+  SEARCHING -> LOCKED : gps_fix
+  LOCKED -> DRIFTING : drift_detected
+  DRIFTING -> LOCKED : gps_fix
+  LOCKED -> LOST_FIX : lose_fix
+  LOST_FIX -> REACQUIRING : reacquire
+  REACQUIRING -> LOCKED : gps_fix
+  REACQUIRING -> LOST_FIX : lose_fix
+
+fsm: Battery
+states: FULL, CHARGING, DISCHARGING, LOW, CRITICAL, SHUTDOWN
+events: plug_in, unplug, drain, charge, alert_low, alert_critical, power_off
+transitions:
+  FULL -> DISCHARGING : unplug
+  DISCHARGING -> LOW : alert_low
+  LOW -> CRITICAL : alert_critical
+  CRITICAL -> SHUTDOWN : power_off
+  LOW -> CHARGING : plug_in
+  CHARGING -> FULL : charge
+  DISCHARGING -> CHARGING : plug_in
+  CRITICAL -> CHARGING : plug_in
+
+fsm: MissionControl
+states: PLANNING, READY, IN_PROGRESS, PAUSED, ABORTED, COMPLETED
+events: plan_ready, start, pause, resume, abort, complete
+transitions:
+  PLANNING -> READY : plan_ready
+  READY -> IN_PROGRESS : start
+  IN_PROGRESS -> PAUSED : pause
+  PAUSED -> IN_PROGRESS : resume
+  IN_PROGRESS -> COMPLETED : complete
+  PAUSED -> ABORTED : abort
+  IN_PROGRESS -> ABORTED : abort
+  ABORTED -> PLANNING : plan_ready
