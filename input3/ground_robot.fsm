@@ -1,0 +1,167 @@
+# FORMAT FOR WRITING THE .fsm
+# fsm: fsm_name
+# states: write the names of all the possible states
+# events: now write all the possible events in ur fsm 
+# transitions:
+# STATE1 -> STATE2 : event_name
+
+fsm: Navigation
+states: IDLE, ROUTE_PLANNING, MOVING_FORWARD, MOVING_BACKWARD, AVOIDING_OBSTACLE_LEFT, AVOIDING_OBSTACLE_RIGHT, WAITING_FOR_SIGNAL, WAITING_FOR_USER, ARRIVED_AT_DEST, RECALCULATING_ROUTE, SCANNING_ENVIRONMENT, ADJUSTING_PATH, LOW_BATTERY_HALT, EMERGENCY_HALT, RESUMING_MOVEMENT
+events: start_route, route_ready, begin_move_forward, begin_move_backward, detect_obstacle_left, detect_obstacle_right, wait_signal, wait_user, reach_destination, route_lost, scan_env, adjust_path, low_battery, emergency, resume
+transitions:
+  IDLE -> ROUTE_PLANNING : start_route  
+  ROUTE_PLANNING -> MOVING_FORWARD : route_ready  
+  MOVING_FORWARD -> AVOIDING_OBSTACLE_LEFT : detect_obstacle_left  
+  MOVING_FORWARD -> AVOIDING_OBSTACLE_RIGHT : detect_obstacle_right  
+  AVOIDING_OBSTACLE_LEFT -> MOVING_FORWARD : resume  
+  AVOIDING_OBSTACLE_RIGHT -> MOVING_FORWARD : resume  
+  MOVING_FORWARD -> WAITING_FOR_SIGNAL : wait_signal  
+  MOVING_FORWARD -> WAITING_FOR_USER : wait_user  
+  WAITING_FOR_SIGNAL -> MOVING_FORWARD : resume  
+  WAITING_FOR_USER -> MOVING_FORWARD : resume  
+  MOVING_FORWARD -> ARRIVED_AT_DEST : reach_destination  
+  MOVING_FORWARD -> RECALCULATING_ROUTE : route_lost  
+  RECALCULATING_ROUTE -> MOVING_FORWARD : route_ready  
+  MOVING_FORWARD -> SCANNING_ENVIRONMENT : scan_env  
+  SCANNING_ENVIRONMENT -> ADJUSTING_PATH : adjust_path  
+  ADJUSTING_PATH -> MOVING_FORWARD : resume  
+  ANY_STATE -> LOW_BATTERY_HALT : low_battery  
+  ANY_STATE -> EMERGENCY_HALT : emergency  
+  LOW_BATTERY_HALT -> RESUMING_MOVEMENT : resume  
+  EMERGENCY_HALT -> RESUMING_MOVEMENT : resume  
+  RESUMING_MOVEMENT -> MOVING_FORWARD : resume  
+  ARRIVED_AT_DEST -> IDLE : resume
+
+fsm: PayloadHandling
+states: EMPTY, LOADING_ITEM1, LOADING_ITEM2, LOADED_FULL, IN_TRANSIT_SECURE, IN_TRANSIT_LOOSE, UNLOADING_ITEM1, UNLOADING_ITEM2, DELIVERED_SUCCESS, ERROR_OVERLOAD, ERROR_DAMAGE, INSPECTING_EMPTY, INSPECTING_LOADED, SECURING_LOAD, RELEASING_LOAD
+events: begin_loading1, begin_loading2, finish_loading, start_transit_secure, start_transit_loose, begin_unloading1, begin_unloading2, finish_unloading, fail_overload, fail_damage, inspect_empty, inspect_loaded, secure_load, release_load
+transitions:
+  EMPTY -> LOADING_ITEM1 : begin_loading1  
+  LOADING_ITEM1 -> LOADING_ITEM2 : begin_loading2  
+  LOADING_ITEM2 -> LOADED_FULL : finish_loading  
+  LOADED_FULL -> IN_TRANSIT_SECURE : start_transit_secure  
+  LOADED_FULL -> IN_TRANSIT_LOOSE : start_transit_loose  
+  IN_TRANSIT_SECURE -> UNLOADING_ITEM1 : begin_unloading1  
+  IN_TRANSIT_LOOSE -> UNLOADING_ITEM1 : begin_unloading1  
+  UNLOADING_ITEM1 -> UNLOADING_ITEM2 : begin_unloading2  
+  UNLOADING_ITEM2 -> DELIVERED_SUCCESS : finish_unloading  
+  DELIVERED_SUCCESS -> EMPTY : finish_unloading  
+  LOADING_ITEM1 -> ERROR_OVERLOAD : fail_overload  
+  LOADING_ITEM2 -> ERROR_OVERLOAD : fail_overload  
+  UNLOADING_ITEM1 -> ERROR_DAMAGE : fail_damage  
+  UNLOADING_ITEM2 -> ERROR_DAMAGE : fail_damage  
+  ERROR_OVERLOAD -> INSPECTING_EMPTY : inspect_empty  
+  ERROR_DAMAGE -> INSPECTING_EMPTY : inspect_empty  
+  INSPECTING_EMPTY -> EMPTY : finish_unloading  
+  LOADED_FULL -> INSPECTING_LOADED : inspect_loaded  
+  INSPECTING_LOADED -> SECURING_LOAD : secure_load  
+  SECURING_LOAD -> IN_TRANSIT_SECURE : start_transit_secure  
+  ANY_STATE -> RELEASING_LOAD : release_load  
+  RELEASING_LOAD -> EMPTY : finish_unloading
+
+fsm: Safety
+states: NORMAL_OPERATION, OBSTACLE_ALERT_NEAR, OBSTACLE_ALERT_FAR, EMERGENCY_STOP_CRITICAL, EMERGENCY_STOP_NONCRITICAL, HAZARD_DETECTED_FIRE, HAZARD_DETECTED_COLLISION, RECOVERY_PHASE1, RECOVERY_PHASE2, MANUAL_OVERRIDE_USER, MANUAL_OVERRIDE_REMOTE, SYSTEM_CHECK, ALERT_BROADCAST, PAUSE_MODE, RESUME_MODE
+events: detect_obstacle_near, detect_obstacle_far, emergency_stop_critical, emergency_stop_noncritical, hazard_fire, hazard_collision, reset_phase1, reset_phase2, override_user, override_remote, system_check, alert_broadcast, pause, resume
+transitions:
+  NORMAL_OPERATION -> OBSTACLE_ALERT_NEAR : detect_obstacle_near  
+  NORMAL_OPERATION -> OBSTACLE_ALERT_FAR : detect_obstacle_far  
+  OBSTACLE_ALERT_NEAR -> NORMAL_OPERATION : resume  
+  OBSTACLE_ALERT_FAR -> NORMAL_OPERATION : resume  
+  NORMAL_OPERATION -> EMERGENCY_STOP_CRITICAL : emergency_stop_critical  
+  OBSTACLE_ALERT_NEAR -> EMERGENCY_STOP_CRITICAL : emergency_stop_critical  
+  NORMAL_OPERATION -> EMERGENCY_STOP_NONCRITICAL : emergency_stop_noncritical  
+  EMERGENCY_STOP_CRITICAL -> RECOVERY_PHASE1 : reset_phase1  
+  EMERGENCY_STOP_NONCRITICAL -> RECOVERY_PHASE1 : reset_phase1  
+  RECOVERY_PHASE1 -> RECOVERY_PHASE2 : reset_phase2  
+  RECOVERY_PHASE2 -> NORMAL_OPERATION : resume  
+  NORMAL_OPERATION -> HAZARD_DETECTED_FIRE : hazard_fire  
+  NORMAL_OPERATION -> HAZARD_DETECTED_COLLISION : hazard_collision  
+  HAZARD_DETECTED_FIRE -> EMERGENCY_STOP_CRITICAL : emergency_stop_critical  
+  HAZARD_DETECTED_COLLISION -> EMERGENCY_STOP_CRITICAL : emergency_stop_critical  
+  NORMAL_OPERATION -> MANUAL_OVERRIDE_USER : override_user  
+  NORMAL_OPERATION -> MANUAL_OVERRIDE_REMOTE : override_remote  
+  MANUAL_OVERRIDE_USER -> NORMAL_OPERATION : reset_phase1  
+  MANUAL_OVERRIDE_REMOTE -> NORMAL_OPERATION : reset_phase1  
+  ANY_STATE -> SYSTEM_CHECK : system_check  
+  SYSTEM_CHECK -> ALERT_BROADCAST : alert_broadcast  
+  ALERT_BROADCAST -> PAUSE_MODE : pause  
+  PAUSE_MODE -> RESUME_MODE : resume  
+  RESUME_MODE -> NORMAL_OPERATION : resume
+
+fsm: Connectivity
+states: OFFLINE_DISCONNECTED, CONNECTING_WIFI, CONNECTING_BLUETOOTH, CONNECTED_STABLE, CONNECTED_UNSTABLE, LOST_SIGNAL_WIFI, LOST_SIGNAL_BLUETOOTH, RECONNECTING_ATTEMPT1, RECONNECTING_ATTEMPT2, RECONNECTING_ATTEMPT3, SIGNAL_BOOST, LINK_VERIFICATION, NETWORK_SCAN, AUTHENTICATION, STANDBY_MODE
+events: power_on_wifi, power_on_bluetooth, establish_link_stable, establish_link_unstable, lose_link_wifi, lose_link_bluetooth, attempt_reconnect1, attempt_reconnect2, attempt_reconnect3, boost_signal, verify_link, scan_network, authenticate, standby
+transitions:
+  OFFLINE_DISCONNECTED -> CONNECTING_WIFI : power_on_wifi  
+  OFFLINE_DISCONNECTED -> CONNECTING_BLUETOOTH : power_on_bluetooth  
+  CONNECTING_WIFI -> CONNECTED_STABLE : establish_link_stable  
+  CONNECTING_BLUETOOTH -> CONNECTED_STABLE : establish_link_stable  
+  CONNECTED_STABLE -> CONNECTED_UNSTABLE : establish_link_unstable  
+  CONNECTED_STABLE -> LOST_SIGNAL_WIFI : lose_link_wifi  
+  CONNECTED_STABLE -> LOST_SIGNAL_BLUETOOTH : lose_link_bluetooth  
+  LOST_SIGNAL_WIFI -> RECONNECTING_ATTEMPT1 : attempt_reconnect1  
+  LOST_SIGNAL_BLUETOOTH -> RECONNECTING_ATTEMPT1 : attempt_reconnect1  
+  RECONNECTING_ATTEMPT1 -> RECONNECTING_ATTEMPT2 : attempt_reconnect2  
+  RECONNECTING_ATTEMPT2 -> RECONNECTING_ATTEMPT3 : attempt_reconnect3  
+  RECONNECTING_ATTEMPT3 -> CONNECTED_STABLE : establish_link_stable  
+  RECONNECTING_ATTEMPT3 -> OFFLINE_DISCONNECTED : lose_link_wifi  
+  ANY_STATE -> SIGNAL_BOOST : boost_signal  
+  SIGNAL_BOOST -> LINK_VERIFICATION : verify_link  
+  LINK_VERIFICATION -> CONNECTED_STABLE : establish_link_stable  
+  OFFLINE_DISCONNECTED -> NETWORK_SCAN : scan_network  
+  NETWORK_SCAN -> AUTHENTICATION : authenticate  
+  AUTHENTICATION -> CONNECTING_WIFI : power_on_wifi  
+  CONNECTED_STABLE -> STANDBY_MODE : standby  
+  STANDBY_MODE -> CONNECTED_STABLE : establish_link_stable
+
+fsm: Diagnostics
+states: IDLE_STANDBY, RUNNING_CHECKS_ROUTINE, RUNNING_CHECKS_ADVANCED, ERROR_DETECTED_MINOR, ERROR_DETECTED_MAJOR, REPORTING_LOG, REPORTING_ALERT, MAINTENANCE_SCHEDULED, MAINTENANCE_IN_PROGRESS, MAINTENANCE_COMPLETED, SYSTEM_LOGGING, DATA_ANALYSIS, FAULT_ISOLATION, REPAIR_PLANNING, VERIFICATION_POST_REPAIR
+events: initiate_check_routine, initiate_check_advanced, detect_error_minor, detect_error_major, report_log, report_alert, schedule_maintenance, start_maintenance, complete_maintenance, log_system, analyze_data, isolate_fault, plan_repair, verify_repair
+transitions:
+  IDLE_STANDBY -> RUNNING_CHECKS_ROUTINE : initiate_check_routine  
+  IDLE_STANDBY -> RUNNING_CHECKS_ADVANCED : initiate_check_advanced  
+  RUNNING_CHECKS_ROUTINE -> ERROR_DETECTED_MINOR : detect_error_minor  
+  RUNNING_CHECKS_ADVANCED -> ERROR_DETECTED_MAJOR : detect_error_major  
+  ERROR_DETECTED_MINOR -> REPORTING_LOG : report_log  
+  ERROR_DETECTED_MAJOR -> REPORTING_ALERT : report_alert  
+  REPORTING_LOG -> MAINTENANCE_SCHEDULED : schedule_maintenance  
+  REPORTING_ALERT -> MAINTENANCE_SCHEDULED : schedule_maintenance  
+  MAINTENANCE_SCHEDULED -> MAINTENANCE_IN_PROGRESS : start_maintenance  
+  MAINTENANCE_IN_PROGRESS -> MAINTENANCE_COMPLETED : complete_maintenance  
+  MAINTENANCE_COMPLETED -> IDLE_STANDBY : verify_repair  
+  ANY_STATE -> SYSTEM_LOGGING : log_system  
+  SYSTEM_LOGGING -> DATA_ANALYSIS : analyze_data  
+  DATA_ANALYSIS -> FAULT_ISOLATION : isolate_fault  
+  FAULT_ISOLATION -> REPAIR_PLANNING : plan_repair  
+  REPAIR_PLANNING -> MAINTENANCE_IN_PROGRESS : start_maintenance  
+  MAINTENANCE_COMPLETED -> VERIFICATION_POST_REPAIR : verify_repair  
+  VERIFICATION_POST_REPAIR -> IDLE_STANDBY : complete_maintenance  
+  RUNNING_CHECKS_ROUTINE -> IDLE_STANDBY : complete_maintenance  
+  RUNNING_CHECKS_ADVANCED -> IDLE_STANDBY : complete_maintenance
+
+fsm: UserInterface
+states: WAITING_INPUT_TEXT, WAITING_INPUT_VOICE, PROCESSING_COMMAND, PROCESSING_QUERY, DISPLAYING_FEEDBACK_SUCCESS, DISPLAYING_FEEDBACK_ERROR, IDLE_SCREEN, ALERT_VISUAL, ALERT_AUDIO, SHUTDOWN_INIT, SHUTDOWN_CONFIRM, HELP_MENU, SETTINGS_MENU, UPDATE_PROMPT, CONFIRMATION_DIALOG
+events: receive_input_text, receive_input_voice, process_command, process_query, feedback_success, feedback_error, alert_visual, alert_audio, timeout_idle, power_off_init, power_off_confirm, show_help, show_settings, prompt_update, show_confirm
+transitions:
+  IDLE_SCREEN -> WAITING_INPUT_TEXT : receive_input_text  
+  IDLE_SCREEN -> WAITING_INPUT_VOICE : receive_input_voice  
+  WAITING_INPUT_TEXT -> PROCESSING_COMMAND : process_command  
+  WAITING_INPUT_VOICE -> PROCESSING_COMMAND : process_command  
+  PROCESSING_COMMAND -> DISPLAYING_FEEDBACK_SUCCESS : feedback_success  
+  PROCESSING_COMMAND -> DISPLAYING_FEEDBACK_ERROR : feedback_error  
+  DISPLAYING_FEEDBACK_SUCCESS -> IDLE_SCREEN : timeout_idle  
+  DISPLAYING_FEEDBACK_ERROR -> IDLE_SCREEN : timeout_idle  
+  ANY_STATE -> ALERT_VISUAL : alert_visual  
+  ANY_STATE -> ALERT_AUDIO : alert_audio  
+  ALERT_VISUAL -> IDLE_SCREEN : timeout_idle  
+  ALERT_AUDIO -> IDLE_SCREEN : timeout_idle  
+  ANY_STATE -> SHUTDOWN_INIT : power_off_init  
+  SHUTDOWN_INIT -> SHUTDOWN_CONFIRM : power_off_confirm  
+  SHUTDOWN_CONFIRM -> IDLE_SCREEN : timeout_idle  
+  IDLE_SCREEN -> HELP_MENU : show_help  
+  HELP_MENU -> IDLE_SCREEN : timeout_idle  
+  IDLE_SCREEN -> SETTINGS_MENU : show_settings  
+  SETTINGS_MENU -> IDLE_SCREEN : timeout_idle  
+  IDLE_SCREEN -> UPDATE_PROMPT : prompt_update  
+  UPDATE_PROMPT -> CONFIRMATION_DIALOG : show_confirm  
+  CONFIRMATION_DIALOG -> IDLE_SCREEN : timeout_idle
